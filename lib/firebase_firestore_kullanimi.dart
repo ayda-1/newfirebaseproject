@@ -181,6 +181,48 @@ class _FirebaseFirestoreKullanimiState
               ),
             ),
             SizedBox(height: 15),
+            SizedBox(
+              height: 55,
+              width: 280,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pink.shade100,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  changesAllDoc();
+                },
+                child: Text(
+                  "değişim varsa hepsini getir",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              height: 55,
+              width: 280,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade100,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  queryInData();
+                },
+                child: Text(
+                  "veri sorgulama",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
           ],
         ),
       ),
@@ -291,6 +333,32 @@ class _FirebaseFirestoreKullanimiState
 
   void streamDurdur() async {
     await userSubscribe.cancel();
+  }
+
+  void changesAllDoc() async {
+    var userStream = firestore.collection("users").snapshots();
+
+    userSubscribe = userStream.listen((event) {
+      event.docs.forEach((user) {
+        debugPrint(user.data().toString());
+      });
+    });
+  }
+
+  void queryInData() async {
+    //bir sorgulama yapılıyorsa kolaksiyon uzerınden yapılmalıdır
+    var userRef = firestore.collection("users");
+    //yasi 38 a esit olanı getir
+    //var result = await userRef.where("age", isEqualTo: 38).get();
+    //var result = await userRef.where("age", isGreaterThan: 38).get();
+    //var result = await userRef.where("colors", arrayContains: "Siyah").get();
+    var result = await userRef.orderBy("name").startAt(["Ay"]).endAt([
+      "Gül" + "\uf8ff",
+    ]).get();
+
+    for (var user in result.docs) {
+      debugPrint(user.data().toString());
+    }
   }
 }
 
